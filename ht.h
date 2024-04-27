@@ -315,13 +315,11 @@ HashTable<K,V,Prober,Hash,KEqual>::HashTable(
 template<typename K, typename V, typename Prober, typename Hash, typename KEqual>
 HashTable<K,V,Prober,Hash,KEqual>::~HashTable()
 {
-		for (unsigned int i = 0; i < table_.size(); i++) {
-				if (table_[i] != nullptr) {
-						if (!(table_[i]->deleted)) {
-								delete table_[i];
-						}
-				}
-		}
+	for (HASH_INDEX_T i = 0; i < table_.size(); ++i) {
+        if (table_[i] != nullptr) {
+            delete table_[i];  // Delete the HashItem object
+        }
+    }
 }
 
 // To be completed
@@ -376,9 +374,9 @@ void HashTable<K,V,Prober,Hash,KEqual>::insert(const ItemType& p)
     }
     else if (table_[loc]->deleted) {
 				size_++; 
-		}
-		
-    delete table_[loc];
+	}
+	
+    delete table_[loc]; 
     table_[loc] = newItem; 
 }
 
@@ -387,12 +385,12 @@ template<typename K, typename V, typename Prober, typename Hash, typename KEqual
 void HashTable<K,V,Prober,Hash,KEqual>::remove(const KeyType& key)
 {
 		HASH_INDEX_T loc = this->probe(key);
-		if (loc != npos) {
-				if (table_[loc] != nullptr) {
-						table_[loc]->deleted = true;
-            size_--; 
-				}
+		if ((loc == npos) || table_[loc] == nullptr || table_[loc]->deleted) {
+			return;
 		}
+        (table_[loc])->deleted = true;
+
+        size_--; 
 }
 
 
@@ -479,6 +477,11 @@ void HashTable<K,V,Prober,Hash,KEqual>::resize()
     for (HASH_INDEX_T i = 0; i < oldHashCopy.size(); ++i) {
       if (oldHashCopy[i] != nullptr && !oldHashCopy[i]->deleted) {
         insert(oldHashCopy[i]->item);
+        delete oldHashCopy[i]; 
+      }
+      else if(oldHashCopy[i] != nullptr && oldHashCopy[i]->deleted) {
+        delete oldHashCopy[i];
+        oldHashCopy[i] = nullptr; 
       }
     }
 }
