@@ -466,14 +466,17 @@ typename HashTable<K,V,Prober,Hash,KEqual>::HashItem* HashTable<K,V,Prober,Hash,
 template<typename K, typename V, typename Prober, typename Hash, typename KEqual>
 void HashTable<K,V,Prober,Hash,KEqual>::resize()
 {
-    // std:: cout « "resizing" « std:: endl;
+    // resizing 
     mIndex_++;
     std::vector<HashItem *> newHashTable(CAPACITIES[mIndex_]);
     std::vector<HashItem *> oldHashCopy = table_;
     table_ = newHashTable;
-    // std:: cout « "inserting for the sake of hashtableresizing, the container size is now" « CAPACITIES [mIndex_] « std:: end?;
+    
+    // set to 0 
     size_ = 0;
     hiddenSize_ = 0;
+    
+    // for loop 
     for (HASH_INDEX_T i = 0; i < oldHashCopy.size(); ++i) {
       if (oldHashCopy[i] != nullptr && !oldHashCopy[i]->deleted) {
         insert(oldHashCopy[i]->item);
